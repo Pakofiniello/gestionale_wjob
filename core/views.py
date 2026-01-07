@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from . import models
 def login(request):
     return render(request, 'core/login.html')
 
@@ -7,7 +7,13 @@ def register(request):
     return render(request, 'core/register.html')
 
 def dashboard(request):
-    return render(request, 'core/dashboard.html')
+
+    prodotti = models.Product.objects.all()
+    context = {'prodotti': prodotti,
+               'n_prodotti': prodotti.count()}
+
+
+    return render(request, 'core/dashboard.html', context)
 
 def products(request):
     return render(request, 'core/products.html')
