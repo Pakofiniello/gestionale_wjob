@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione - Gestionale Magazzino</title>
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #7C9885 0%, #5F8D7A 100%);
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(45, 62, 63, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 48px;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .auth-logo svg {
+            filter: drop-shadow(0 2px 8px rgba(124, 152, 133, 0.3));
+        }
+        
+        .auth-logo span {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .auth-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .auth-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .auth-link a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .auth-link a:hover {
+            color: var(--primary);
+        }
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .checkbox-wrapper label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            line-height: 1.5;
+        }
+        
+        .checkbox-wrapper label a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .checkbox-wrapper label a:hover {
+            text-decoration: underline;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .strength-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--error);
+            transition: all 0.3s ease;
+        }
+        
+        .strength-bar-fill.weak {
+            width: 33%;
+            background: var(--error);
+        }
+        
+        .strength-bar-fill.medium {
+            width: 66%;
+            background: var(--warning);
+        }
+        
+        .strength-bar-fill.strong {
+            width: 100%;
+            background: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+                    <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#gradient1)"/>
+                    <path d="M12 12h8v8h-8z" fill="white" opacity="0.9"/>
+                    <defs>
+                        <linearGradient id="gradient1" x1="4" y1="4" x2="28" y2="28">
+                            <stop offset="0%" stop-color="#7C9885"/>
+                            <stop offset="100%" stop-color="#5F8D7A"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>MagazzinoHub</span>
+            </div>
+            
+            <h1 class="auth-title">Crea il tuo account</h1>
+            <p class="auth-subtitle">Inizia a gestire il tuo magazzino oggi</p>
+            
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <input type="text" class="form-input" name="first_name" placeholder="Mario" required autofocus>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Cognome</label>
+                        <input type="text" class="form-input" name="last_name" placeholder="Rossi" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" name="email" placeholder="nome@esempio.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Azienda</label>
+                    <input type="text" class="form-input" name="company" placeholder="Nome azienda (opzionale)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" name="password" id="password" placeholder="••••••••" required minlength="8" oninput="checkPasswordStrength(this.value)">
+                    <div class="strength-bar">
+                        <div class="strength-bar-fill" id="strengthBar"></div>
+                    </div>
+                    <div class="password-strength" id="strengthText">Minimo 8 caratteri</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Conferma Password</label>
+                    <input type="password" class="form-input" name="confirm_password" placeholder="••••••••" required>
+                </div>
+                
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">Accetto i <a href="terms.html" target="_blank">Termini di Servizio</a> e la <a href="privacy.html" target="_blank">Privacy Policy</a></label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    Crea Account
+                </button>
+            </form>
+            
+            <div class="auth-link">
+                Hai già un account? <a href="{% url 'core:login' %}">Accedi</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <script src="{% static 'core/js/main.js' %}"></script>
+    <script>
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            strengthBar.className = 'strength-bar-fill';
+            
+            if (strength === 1) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = 'Password debole';
+                strengthText.style.color = 'var(--error)';
+            } else if (strength === 2 || strength === 3) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = 'Password media';
+                strengthText.style.color = 'var(--warning)';
+            } else if (strength >= 4) {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = 'Password forte';
+                strengthText.style.color = 'var(--success)';
+            }
+        }
+        
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirm_password');
+            
+            // Verifica password match
+            if (password !== confirmPassword) {
+                Toast.show('Le password non corrispondono', 'error');
+                return;
+            }
+            
+            // Verifica termini accettati
+            if (!formData.get('terms')) {
+                Toast.show('Devi accettare i termini di servizio', 'error');
+                return;
+            }
+            
+            const data = {
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                email: formData.get('email'),
+                company: formData.get('company'),
+                password: password
+            };
+            
+            // Simulazione registrazione (sostituisci con chiamata API Django)
+            console.log('Registration attempt:', data);
+            
+            // Mostra loading
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Creazione account...</span>';
+            btn.disabled = true;
+            
+            // Simula chiamata API
+            setTimeout(() => {
+                // Successo
+                Toast.show('Account creato con successo!', 'success');
+                
+                setTimeout(() => {
+                    // Reindirizza al login
+                    window.location.href = '{% url "core:login" %}';
+                }, 1500);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

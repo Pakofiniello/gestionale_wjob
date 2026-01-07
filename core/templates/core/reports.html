@@ -1,0 +1,433 @@
+{% extends "core/base.html" %}
+
+{% block title %}Report - Gestionale Magazzino{% endblock %}
+{% block page_title %}Report e Analisi{% endblock %}
+
+{% block content %}
+<!-- Header con azioni -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Analisi dettagliate e report sulle performance del magazzino</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <button class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Esporta Report
+        </button>
+        <button class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nuovo Report
+        </button>
+    </div>
+</div>
+
+<!-- Filtri Periodo -->
+<div class="table-container" style="margin-bottom: 24px;">
+    <div style="padding: 20px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-sm btn-primary">Oggi</button>
+            <button class="btn btn-sm btn-secondary">Settimana</button>
+            <button class="btn btn-sm btn-secondary">Mese</button>
+            <button class="btn btn-sm btn-secondary">Anno</button>
+        </div>
+        
+        <div style="width: 1px; height: 30px; background: var(--border);"></div>
+        
+        <input type="date" class="form-input" style="width: 160px;" placeholder="Data inizio">
+        <span style="color: var(--text-secondary);">—</span>
+        <input type="date" class="form-input" style="width: 160px;" placeholder="Data fine">
+        
+        <button class="btn btn-secondary btn-sm">Applica</button>
+    </div>
+</div>
+
+<!-- KPI Overview -->
+<div class="stats-grid" style="margin-bottom: 32px;">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #6B9E78, #8FBC99);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+            <span class="stat-change positive">+23%</span>
+        </div>
+        <div class="stat-value">€89,432</div>
+        <div class="stat-label">Fatturato Mensile</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #7C98B6, #9BB0CD);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+            </div>
+            <span class="stat-change positive">+8%</span>
+        </div>
+        <div class="stat-value">342</div>
+        <div class="stat-label">Ordini Completati</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #D4B5A0, #E8A87C);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+            </div>
+            <span class="stat-change positive">+12%</span>
+        </div>
+        <div class="stat-value">€261.50</div>
+        <div class="stat-label">Valore Medio Ordine</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #7C9885, #A8C4B3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+            </div>
+            <span class="stat-change negative">-3%</span>
+        </div>
+        <div class="stat-value">8.2</div>
+        <div class="stat-label">Rotazione Stock (giorni)</div>
+    </div>
+</div>
+
+<!-- Grafici Principali -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+    <!-- Grafico Vendite -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Andamento Vendite</h3>
+            <select class="form-select" style="width: 140px;">
+                <option>Ultimi 7 giorni</option>
+                <option>Ultimi 30 giorni</option>
+                <option>Ultimi 3 mesi</option>
+                <option>Ultimo anno</option>
+            </select>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Distribuzione Categorie -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Categorie Prodotti</h3>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="categoriesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Grafici Secondari -->
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px;">
+    <!-- Ordini per Stato -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Stati Ordini</h3>
+        </div>
+        <div class="chart-wrapper" style="height: 250px;">
+            <canvas id="orderStatusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Performance Fornitori -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3 class="chart-title">Top Fornitori</h3>
+        </div>
+        <div class="chart-wrapper" style="height: 250px;">
+            <canvas id="suppliersChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Tabelle Analisi -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <!-- Prodotti più venduti -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3 class="table-title">Prodotti Più Venduti</h3>
+            <button class="btn btn-sm btn-secondary">Dettagli</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prodotto</th>
+                        <th>Quantità</th>
+                        <th>Ricavo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Laptop Dell XPS 15</strong></td>
+                        <td>156</td>
+                        <td><strong>€202,798</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Monitor 27" 4K</strong></td>
+                        <td>142</td>
+                        <td><strong>€63,898</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tastiera Meccanica</strong></td>
+                        <td>128</td>
+                        <td><strong>€19,199</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mouse Wireless</strong></td>
+                        <td>98</td>
+                        <td><strong>€7,839</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Webcam HD</strong></td>
+                        <td>87</td>
+                        <td><strong>€7,829</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Prodotti con margine più alto -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3 class="table-title">Margini Più Alti</h3>
+            <button class="btn btn-sm btn-secondary">Dettagli</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prodotto</th>
+                        <th>Margine %</th>
+                        <th>Profitto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Hub USB-C</strong></td>
+                        <td><span class="badge badge-success">68%</span></td>
+                        <td><strong>€12,450</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cavi HDMI</strong></td>
+                        <td><span class="badge badge-success">65%</span></td>
+                        <td><strong>€8,920</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mouse Pad</strong></td>
+                        <td><span class="badge badge-success">62%</span></td>
+                        <td><strong>€4,580</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tastiera Meccanica</strong></td>
+                        <td><span class="badge badge-warning">45%</span></td>
+                        <td><strong>€8,640</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Webcam HD</strong></td>
+                        <td><span class="badge badge-warning">42%</span></td>
+                        <td><strong>€3,288</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Analisi Temporale -->
+<div class="table-container" style="margin-top: 24px;">
+    <div class="table-header">
+        <h3 class="table-title">Performance Mensile</h3>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mese</th>
+                    <th>Ordini</th>
+                    <th>Prodotti Venduti</th>
+                    <th>Fatturato</th>
+                    <th>Costi</th>
+                    <th>Margine</th>
+                    <th>Profitto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Gennaio 2026</strong></td>
+                    <td>342</td>
+                    <td>1,247</td>
+                    <td>€89,432</td>
+                    <td>€52,340</td>
+                    <td>41.5%</td>
+                    <td><strong class="text-success">€37,092</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Dicembre 2025</strong></td>
+                    <td>398</td>
+                    <td>1,456</td>
+                    <td>€105,678</td>
+                    <td>€61,890</td>
+                    <td>41.4%</td>
+                    <td><strong class="text-success">€43,788</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Novembre 2025</strong></td>
+                    <td>315</td>
+                    <td>1,089</td>
+                    <td>€78,234</td>
+                    <td>€45,670</td>
+                    <td>41.6%</td>
+                    <td><strong class="text-success">€32,564</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Ottobre 2025</strong></td>
+                    <td>287</td>
+                    <td>992</td>
+                    <td>€69,876</td>
+                    <td>€40,890</td>
+                    <td>41.5%</td>
+                    <td><strong class="text-success">€28,986</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Settembre 2025</strong></td>
+                    <td>301</td>
+                    <td>1,034</td>
+                    <td>€72,543</td>
+                    <td>€42,450</td>
+                    <td>41.5%</td>
+                    <td><strong class="text-success">€30,093</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Grafico Vendite
+    const salesCtx = document.getElementById('salesTrendChart');
+    if (salesCtx) {
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+                datasets: [{
+                    label: 'Vendite',
+                    data: [12500, 15200, 13800, 16900, 14200, 18500, 11200],
+                    borderColor: 'rgb(124, 152, 133)',
+                    backgroundColor: 'rgba(124, 152, 133, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // Grafico Categorie (Donut)
+    const categoriesCtx = document.getElementById('categoriesChart');
+    if (categoriesCtx) {
+        new Chart(categoriesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Elettronica', 'Arredamento', 'Accessori', 'Cavi', 'Audio'],
+                datasets: [{
+                    data: [45, 20, 18, 10, 7],
+                    backgroundColor: [
+                        'rgb(124, 152, 133)',
+                        'rgb(212, 181, 160)',
+                        'rgb(124, 152, 182)',
+                        'rgb(232, 168, 124)',
+                        'rgb(107, 158, 120)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // Grafico Stati Ordini
+    const statusCtx = document.getElementById('orderStatusChart');
+    if (statusCtx) {
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['In Attesa', 'Lavorazione', 'Spedito', 'Consegnato'],
+                datasets: [{
+                    label: 'Ordini',
+                    data: [47, 38, 68, 189],
+                    backgroundColor: [
+                        'rgba(232, 168, 124, 0.8)',
+                        'rgba(124, 152, 182, 0.8)',
+                        'rgba(124, 152, 133, 0.8)',
+                        'rgba(107, 158, 120, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // Grafico Fornitori
+    const suppliersCtx = document.getElementById('suppliersChart');
+    if (suppliersCtx) {
+        new Chart(suppliersCtx, {
+            type: 'bar',
+            data: {
+                labels: ['TechItalia', 'OfficeFurn', 'AccessoriPlus', 'CableNet', 'AudioPro'],
+                datasets: [{
+                    label: 'Spesa (€)',
+                    data: [89450, 45200, 28900, 18750, 15680],
+                    backgroundColor: 'rgba(124, 152, 133, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

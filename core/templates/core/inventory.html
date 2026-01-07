@@ -1,0 +1,388 @@
+{% extends "core/base.html" %}
+
+{% block title %}Inventario - Gestionale Magazzino{% endblock %}
+{% block page_title %}Inventario{% endblock %}
+
+{% block content %}
+<!-- Header con azioni -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+        <p style="color: var(--text-secondary); margin-top: 8px;">Monitora e gestisci le giacenze di magazzino</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <button class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Esporta Inventario
+        </button>
+        <button class="btn btn-primary" onclick="openStockAdjustmentModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Rettifica Scorte
+        </button>
+    </div>
+</div>
+
+<!-- Stats veloci -->
+<div class="stats-grid" style="margin-bottom: 32px;">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #6B9E78, #8FBC99);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">8,542</div>
+        <div class="stat-label">Unità Totali</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #E8A87C, #F4C9A8);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">23</div>
+        <div class="stat-label">Prodotti Sotto Soglia</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #7C98B6, #9BB0CD);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">€456,789</div>
+        <div class="stat-label">Valore Inventario</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #D4B5A0, #E8A87C);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+            </div>
+        </div>
+        <div class="stat-value">127</div>
+        <div class="stat-label">Movimenti Oggi</div>
+    </div>
+</div>
+
+<!-- Tabella Inventario -->
+<div class="table-container">
+    <div class="table-header">
+        <h3 class="table-title">Inventario Completo</h3>
+        <div style="display: flex; gap: 12px;">
+            <div class="search-box" style="min-width: 280px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Cerca nell'inventario..." id="inventorySearch">
+            </div>
+            <select class="form-select" style="width: 160px;">
+                <option value="">Tutti gli stati</option>
+                <option value="ok">In Stock</option>
+                <option value="low">Stock Basso</option>
+                <option value="out">Esaurito</option>
+            </select>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Prodotto</th>
+                    <th>SKU</th>
+                    <th>Categoria</th>
+                    <th>Ubicazione</th>
+                    <th>Stock Attuale</th>
+                    <th>Soglia Minima</th>
+                    <th>Valore Unitario</th>
+                    <th>Valore Totale</th>
+                    <th>Stato</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Laptop Dell XPS 15</strong></td>
+                    <td>DELL-XPS-001</td>
+                    <td>Elettronica</td>
+                    <td>Scaffale A-12</td>
+                    <td><strong>15</strong></td>
+                    <td>10</td>
+                    <td>€1,299.99</td>
+                    <td><strong>€19,499.85</strong></td>
+                    <td><span class="badge badge-success">In Stock</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(1)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Sedia Ergonomica Pro</strong></td>
+                    <td>CHAIR-ERG-001</td>
+                    <td>Arredamento</td>
+                    <td>Scaffale B-05</td>
+                    <td><strong>8</strong></td>
+                    <td>10</td>
+                    <td>€299.99</td>
+                    <td><strong>€2,399.92</strong></td>
+                    <td><span class="badge badge-warning">Stock Basso</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(2)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Monitor 27" 4K</strong></td>
+                    <td>MON-4K-001</td>
+                    <td>Elettronica</td>
+                    <td>Scaffale A-08</td>
+                    <td><strong>22</strong></td>
+                    <td>15</td>
+                    <td>€449.99</td>
+                    <td><strong>€9,899.78</strong></td>
+                    <td><span class="badge badge-success">In Stock</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(3)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Mouse Wireless Pro</strong></td>
+                    <td>MOU-WL-003</td>
+                    <td>Accessori</td>
+                    <td>Scaffale C-15</td>
+                    <td><strong>3</strong></td>
+                    <td>10</td>
+                    <td>€79.99</td>
+                    <td><strong>€239.97</strong></td>
+                    <td><span class="badge badge-error">Critico</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(4)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Tastiera Meccanica RGB</strong></td>
+                    <td>KEY-MECH-001</td>
+                    <td>Accessori</td>
+                    <td>Scaffale C-12</td>
+                    <td><strong>45</strong></td>
+                    <td>20</td>
+                    <td>€149.99</td>
+                    <td><strong>€6,749.55</strong></td>
+                    <td><span class="badge badge-success">In Stock</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(5)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Webcam Full HD</strong></td>
+                    <td>CAM-HD-001</td>
+                    <td>Periferiche</td>
+                    <td>Scaffale A-20</td>
+                    <td><strong>5</strong></td>
+                    <td>15</td>
+                    <td>€89.99</td>
+                    <td><strong>€449.95</strong></td>
+                    <td><span class="badge badge-warning">Stock Basso</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(6)">Rettifica</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Cuffie Bluetooth</strong></td>
+                    <td>HEAD-BT-001</td>
+                    <td>Audio</td>
+                    <td>Scaffale D-03</td>
+                    <td><strong>0</strong></td>
+                    <td>12</td>
+                    <td>€129.99</td>
+                    <td><strong>€0.00</strong></td>
+                    <td><span class="badge badge-error">Esaurito</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="reorderProduct(7)">Riordina</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Hub USB-C 7 Porte</strong></td>
+                    <td>HUB-USBC-001</td>
+                    <td>Accessori</td>
+                    <td>Scaffale C-18</td>
+                    <td><strong>18</strong></td>
+                    <td>15</td>
+                    <td>€59.99</td>
+                    <td><strong>€1,079.82</strong></td>
+                    <td><span class="badge badge-success">In Stock</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="adjustStock(8)">Rettifica</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Movimenti Recenti -->
+<div class="table-container" style="margin-top: 24px;">
+    <div class="table-header">
+        <h3 class="table-title">Movimenti Recenti</h3>
+        <button class="btn btn-sm btn-secondary">Vedi Tutti</button>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Prodotto</th>
+                    <th>Tipo</th>
+                    <th>Quantità</th>
+                    <th>Utente</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>07/01/2026 14:32</td>
+                    <td>Monitor 27" 4K</td>
+                    <td><span class="badge badge-error">Uscita</span></td>
+                    <td>-3</td>
+                    <td>Mario Rossi</td>
+                    <td>Ordine #ORD-2026-087</td>
+                </tr>
+                <tr>
+                    <td>07/01/2026 11:15</td>
+                    <td>Tastiera Meccanica RGB</td>
+                    <td><span class="badge badge-success">Entrata</span></td>
+                    <td>+20</td>
+                    <td>Laura Bianchi</td>
+                    <td>Rifornimento fornitore</td>
+                </tr>
+                <tr>
+                    <td>07/01/2026 09:45</td>
+                    <td>Mouse Wireless Pro</td>
+                    <td><span class="badge badge-error">Uscita</span></td>
+                    <td>-5</td>
+                    <td>Giuseppe Verdi</td>
+                    <td>Ordine #ORD-2026-086</td>
+                </tr>
+                <tr>
+                    <td>06/01/2026 16:20</td>
+                    <td>Laptop Dell XPS 15</td>
+                    <td><span class="badge badge-info">Rettifica</span></td>
+                    <td>+1</td>
+                    <td>Anna Neri</td>
+                    <td>Reso cliente</td>
+                </tr>
+                <tr>
+                    <td>06/01/2026 14:10</td>
+                    <td>Webcam Full HD</td>
+                    <td><span class="badge badge-success">Entrata</span></td>
+                    <td>+15</td>
+                    <td>Paolo Gialli</td>
+                    <td>Nuovo acquisto</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Rettifica Scorte -->
+<div class="modal-overlay" id="stockAdjustmentModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Rettifica Scorte</h2>
+            <button class="modal-close" onclick="closeStockAdjustmentModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="stockAdjustmentForm">
+                <div class="form-group">
+                    <label class="form-label">Prodotto</label>
+                    <select class="form-select" name="product" required>
+                        <option value="">Seleziona prodotto...</option>
+                        <option value="1">Laptop Dell XPS 15 (Stock: 15)</option>
+                        <option value="2">Sedia Ergonomica Pro (Stock: 8)</option>
+                        <option value="3">Monitor 27" 4K (Stock: 22)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo di Movimento</label>
+                    <select class="form-select" name="movement_type" required>
+                        <option value="in">Entrata (+)</option>
+                        <option value="out">Uscita (-)</option>
+                        <option value="adjust">Rettifica</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Quantità</label>
+                    <input type="number" class="form-input" name="quantity" required min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Note</label>
+                    <textarea class="form-textarea" name="notes" rows="3" placeholder="Motivo della rettifica..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeStockAdjustmentModal()">Annulla</button>
+            <button class="btn btn-primary" onclick="saveStockAdjustment()">Salva Rettifica</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openStockAdjustmentModal() {
+    document.getElementById('stockAdjustmentModal').classList.add('active');
+}
+
+function closeStockAdjustmentModal() {
+    document.getElementById('stockAdjustmentModal').classList.remove('active');
+}
+
+function saveStockAdjustment() {
+    const form = document.getElementById('stockAdjustmentForm');
+    if (Form.validate(form)) {
+        const data = Form.serialize(form);
+        Toast.show('Rettifica scorte salvata con successo', 'success');
+        closeStockAdjustmentModal();
+        Form.reset(form);
+    }
+}
+
+function adjustStock(productId) {
+    openStockAdjustmentModal();
+    // Precompila il form con il prodotto selezionato
+}
+
+function reorderProduct(productId) {
+    Toast.show('Riordino prodotto in corso...', 'info');
+}
+
+// Ricerca inventario
+document.getElementById('inventorySearch')?.addEventListener('input', function(e) {
+    Table.filter(document.querySelector('table'), e.target.value);
+});
+</script>
+{% endblock %}
