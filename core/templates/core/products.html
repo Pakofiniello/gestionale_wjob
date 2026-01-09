@@ -31,11 +31,9 @@
         
         <select class="form-select" style="width: 180px;" id="categoryFilter">
             <option value="">Tutte le categorie</option>
-            <option value="elettronica">Elettronica</option>
-            <option value="arredamento">Arredamento</option>
-            <option value="accessori">Accessori</option>
-            <option value="cavi">Cavi</option>
-            <option value="periferiche">Periferiche</option>
+            {% for categoria in categories %}
+            <option value="{{ categoria.id }}">{{ categoria.nome_categoria }}</option>
+            {% endfor %}
         </select>
         
         <select class="form-select" style="width: 160px;" id="stockFilter">
@@ -58,177 +56,56 @@
 
 <!-- Products Grid -->
 <div class="products-grid" id="productsGrid">
-    <!-- Product Card 1 -->
-    <div class="product-card" data-category="elettronica" data-stock="15">
-        <div class="product-image" style="background: linear-gradient(135deg, #7C9885, #A8C4B3);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-        </div>
-        <div class="product-body">
-            <div class="product-category">Elettronica</div>
-            <h3 class="product-name">Laptop Dell XPS 15</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: DELL-XPS-001
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€1,299.99</div>
-                    <div class="product-stock">Stock: 15 unità</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(1)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
+    {% if prodotti %}
+        {% for prodotto in prodotti %}
+        <div class="product-card" data-category="{{ prodotto.categoria.id }}" data-stock="{{ prodotto.stock }}" data-product-id="{{ prodotto.id }}">
+            <div class="product-image" style="background: linear-gradient(135deg, #7C9885, #A8C4B3);">
+                {% if prodotto.image %}
+                    <img src="{{ prodotto.image }}" alt="{{ prodotto.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
                     </svg>
-                </button>
+                {% endif %}
+            </div>
+            <div class="product-body">
+                <div class="product-category">{{ prodotto.categoria.nome_categoria }}</div>
+                <h3 class="product-name">{{ prodotto.name }}</h3>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+                    SKU: {{ prodotto.codice_univoco }}
+                </p>
+                <div class="product-footer">
+                    <div>
+                        <div class="product-price">€{{ prodotto.prezzo }}</div>
+                        <div class="product-stock">
+                            Stock: {{ prodotto.stock }} unità
+                            {% if prodotto.stock <= prodotto.ordine_riordino %}
+                                <span style="color: var(--error);">⚠️</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-primary" data-product-id="{{ prodotto.id }}" onclick="viewProductDetails(this.dataset.productId)">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-
-    <!-- Product Card 2 -->
-    <div class="product-card" data-category="arredamento" data-stock="8">
-        <div class="product-image" style="background: linear-gradient(135deg, #D4B5A0, #E8A87C);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+        {% endfor %}
+    {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 20px; opacity: 0.5;">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
             </svg>
+            <h3 style="color: var(--text-secondary); margin-bottom: 8px;">Nessun prodotto trovato</h3>
+            <p style="color: var(--text-secondary); font-size: 14px;">Aggiungi un nuovo prodotto per iniziare.</p>
         </div>
-        <div class="product-body">
-            <div class="product-category">Arredamento</div>
-            <h3 class="product-name">Sedia Ergonomica Pro</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: CHAIR-ERG-001
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€299.99</div>
-                    <div class="product-stock">Stock: 8 unità</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(2)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Card 3 -->
-    <div class="product-card" data-category="elettronica" data-stock="22">
-        <div class="product-image" style="background: linear-gradient(135deg, #7C98B6, #9BB0CD);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-            </svg>
-        </div>
-        <div class="product-body">
-            <div class="product-category">Elettronica</div>
-            <h3 class="product-name">Monitor 27" 4K</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: MON-4K-001
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€449.99</div>
-                    <div class="product-stock">Stock: 22 unità</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(3)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Card 4 -->
-    <div class="product-card" data-category="accessori" data-stock="3">
-        <div class="product-image" style="background: linear-gradient(135deg, #E8A87C, #F4C9A8);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9 18l6-6-6-6"/>
-            </svg>
-        </div>
-        <div class="product-body">
-            <div class="product-category">Accessori</div>
-            <h3 class="product-name">Mouse Wireless Pro</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: MOU-WL-003
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€79.99</div>
-                    <div class="product-stock" style="color: var(--error);">Stock: 3 unità ⚠️</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(4)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Card 5 -->
-    <div class="product-card" data-category="accessori" data-stock="45">
-        <div class="product-image" style="background: linear-gradient(135deg, #6B9E78, #8FBC99);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="4" y="4" width="16" height="16" rx="2"/>
-            </svg>
-        </div>
-        <div class="product-body">
-            <div class="product-category">Accessori</div>
-            <h3 class="product-name">Tastiera Meccanica RGB</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: KEY-MECH-001
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€149.99</div>
-                    <div class="product-stock">Stock: 45 unità</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(5)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Card 6 -->
-    <div class="product-card" data-category="periferiche" data-stock="5">
-        <div class="product-image" style="background: linear-gradient(135deg, #D17B7B, #E39A9A);">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-            </svg>
-        </div>
-        <div class="product-body">
-            <div class="product-category">Periferiche</div>
-            <h3 class="product-name">Webcam Full HD</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
-                SKU: CAM-HD-001
-            </p>
-            <div class="product-footer">
-                <div>
-                    <div class="product-price">€89.99</div>
-                    <div class="product-stock" style="color: var(--error);">Stock: 5 unità ⚠️</div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="viewProductDetails(6)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
+    {% endif %}
 </div>
 
 <!-- Modal Dettagli Prodotto -->
@@ -420,8 +297,9 @@
                 </svg>
             </button>
         </div>
+        <form id="addProductForm" method="POST" action="{% url 'core:product_save' %}">
         <div class="modal-body">
-            <form id="addProductForm">
+                {% csrf_token %}
                 <div class="form-group">
                     <label class="form-label">Nome Prodotto</label>
                     <input type="text" class="form-input" name="name" required>
@@ -429,29 +307,44 @@
                 
                 <div class="form-group">
                     <label class="form-label">SKU</label>
-                    <input type="text" class="form-input" name="sku" required>
+                    <input type="text" class="form-input" name="codice_univoco" required>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label class="form-label">Categoria</label>
-                        <select class="form-select" name="category" required>
+                        <select class="form-select" name="categoria" required>
                             <option value="">Seleziona...</option>
-                            <option value="elettronica">Elettronica</option>
-                            <option value="arredamento">Arredamento</option>
-                            <option value="accessori">Accessori</option>
-                            <option value="cavi">Cavi</option>
-                            <option value="periferiche">Periferiche</option>
+                            {% for categoria in categories %}
+                            <option value="{{ categoria.id }}">{{ categoria.nome_categoria }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Prezzo (€)</label>
-                        <input type="number" class="form-input" name="price" step="0.01" required>
+                        <label class="form-label">Fornitore</label>
+                        <select class="form-select" name="fornitore">
+                            <option value="">Seleziona...</option>
+                            {% for fornitore in fornitori %}
+                            <option value="{{ fornitore.id }}">{{ fornitore.nome }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label">Prezzo Vendita (€)</label>
+                        <input type="number" class="form-input" name="prezzo" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Prezzo di Base (€)</label>
+                        <input type="number" class="form-input" name="prezzo_di_base" step="0.01">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
                     <div class="form-group">
                         <label class="form-label">Quantità Stock</label>
                         <input type="number" class="form-input" name="stock" required>
@@ -459,20 +352,44 @@
                     
                     <div class="form-group">
                         <label class="form-label">Soglia Riordino</label>
-                        <input type="number" class="form-input" name="reorder_level" value="10">
+                        <input type="number" class="form-input" name="ordine_riordino" value="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Unità in Transito</label>
+                        <input type="number" class="form-input" name="unita_in_transito" value="0">
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label class="form-label">Ubicazione</label>
+                        <input type="text" class="form-input" name="location" placeholder="es. Scaffale A-12">
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; padding-top: 28px;">
+                        <label class="form-label" style="display: flex; align-items: center; margin-bottom: 0;">
+                            <input type="checkbox" name="is_active" checked style="margin-right: 8px;">
+                            <span>Prodotto Attivo</span>
+                        </label>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Descrizione</label>
-                    <textarea class="form-textarea" name="description" rows="3"></textarea>
+                    <label class="form-label">URL Immagine</label>
+                    <input type="text" class="form-input" name="image" placeholder="https://...">
                 </div>
-            </form>
+                
+                <div class="form-group">
+                    <label class="form-label">Descrizione (opzionale)</label>
+                    <textarea class="form-textarea" name="descrizione" rows="3" placeholder="Descrizione del prodotto..."></textarea>
+                </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeAddProductModal()">Annulla</button>
-            <button class="btn btn-primary" onclick="saveProduct()">Salva Prodotto</button>
+            <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Annulla</button>
+            <button type="submit" class="btn btn-primary">Salva Prodotto</button>
         </div>
+        </form>
     </div>
 </div>
 
@@ -480,75 +397,33 @@
 
 {% block extra_js %}
 <script>
-// Dati prodotti mock (espansi)
-const productsData = {
-    1: {
-        name: 'Laptop Dell XPS 15',
-        category: 'Elettronica',
-        price: 1299.99,
-        stock: 15,
-        sku: 'DELL-XPS-001',
-        reorder: 10,
-        location: 'Scaffale A-12',
-        description: 'Laptop professionale ad alte prestazioni con display 15.6" 4K OLED, processore Intel Core i7 di ultima generazione, 16GB RAM DDR4, SSD 512GB NVMe. Ideale per professionisti e creativi.',
-        gradient: 'linear-gradient(135deg, #7C9885, #A8C4B3)'
-    },
-    2: {
-        name: 'Sedia Ergonomica Pro',
-        category: 'Arredamento',
-        price: 299.99,
-        stock: 8,
-        sku: 'CHAIR-ERG-001',
-        reorder: 10,
-        location: 'Scaffale B-05',
-        description: 'Sedia ergonomica professionale con supporto lombare regolabile, braccioli 3D, schienale in rete traspirante. Certificata per uso intensivo 8+ ore.',
-        gradient: 'linear-gradient(135deg, #D4B5A0, #E8A87C)'
-    },
-    3: {
-        name: 'Monitor 27" 4K',
-        category: 'Elettronica',
-        price: 449.99,
-        stock: 22,
-        sku: 'MON-4K-001',
-        reorder: 15,
-        location: 'Scaffale A-08',
-        description: 'Monitor professionale 27 pollici con risoluzione 4K UHD, pannello IPS, copertura colore 99% sRGB, HDR10. Ideale per editing foto/video.',
-        gradient: 'linear-gradient(135deg, #7C98B6, #9BB0CD)'
-    },
-    4: {
-        name: 'Mouse Wireless Pro',
-        category: 'Accessori',
-        price: 79.99,
-        stock: 3,
-        sku: 'MOU-WL-003',
-        reorder: 10,
-        location: 'Scaffale C-15',
-        description: 'Mouse wireless ergonomico con sensore ottico ad alta precisione 16000 DPI, 7 pulsanti programmabili, batteria ricaricabile 70+ ore.',
-        gradient: 'linear-gradient(135deg, #E8A87C, #F4C9A8)'
-    },
-    5: {
-        name: 'Tastiera Meccanica RGB',
-        category: 'Accessori',
-        price: 149.99,
-        stock: 45,
-        sku: 'KEY-MECH-001',
-        reorder: 20,
-        location: 'Scaffale C-12',
-        description: 'Tastiera meccanica gaming con switch Cherry MX Red, illuminazione RGB personalizzabile, poggiapolsi magnetico, layout italiano.',
-        gradient: 'linear-gradient(135deg, #6B9E78, #8FBC99)'
-    },
-    6: {
-        name: 'Webcam Full HD',
-        category: 'Periferiche',
-        price: 89.99,
-        stock: 5,
-        sku: 'CAM-HD-001',
-        reorder: 15,
-        location: 'Scaffale A-20',
-        description: 'Webcam Full HD 1080p con autofocus, microfono stereo integrato, correzione automatica luce, compatibile con tutte le piattaforme.',
-        gradient: 'linear-gradient(135deg, #D17B7B, #E39A9A)'
-    }
-};
+// Dati prodotti caricati dal backend
+const productsData = {};
+
+// Popola i dati dei prodotti dal template
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.product-card').forEach(card => {
+        const productId = card.dataset.productId;
+        const name = card.querySelector('.product-name').textContent;
+        const category = card.querySelector('.product-category').textContent;
+        const price = parseFloat(card.querySelector('.product-price').textContent.replace('€', ''));
+        const sku = card.querySelector('p').textContent.replace('SKU: ', '');
+        const stock = parseInt(card.dataset.stock);
+        const description = card.querySelector('.product-name').textContent;
+        
+        productsData[productId] = {
+            name: name,
+            category: category,
+            price: price,
+            stock: stock,
+            sku: sku,
+            reorder: 10,
+            location: 'Scaffale A-01',
+            description: description,
+            gradient: card.querySelector('.product-image').style.background
+        };
+    });
+});
 
 function openAddProductModal() {
     document.getElementById('addProductModal').classList.add('active');
@@ -560,11 +435,12 @@ function closeAddProductModal() {
 
 function saveProduct() {
     const form = document.getElementById('addProductForm');
-    if (Form.validate(form)) {
-        const data = Form.serialize(form);
-        ProductManager.add(data);
+    if (form.checkValidity()) {
+        const formData = new FormData(form);
+        // Qui puoi inviare i dati al server con AJAX
+        alert('Prodotto salvato!');
         closeAddProductModal();
-        Form.reset(form);
+        form.reset();
     }
 }
 
@@ -575,7 +451,7 @@ function viewProductDetails(id) {
     const product = productsData[id];
     
     if (!product) {
-        Toast.show('Prodotto non trovato', 'error');
+        alert('Prodotto non trovato');
         return;
     }
     
@@ -590,7 +466,9 @@ function viewProductDetails(id) {
     document.getElementById('productDetailDescription').textContent = product.description;
     
     // Cambia il gradiente dell'immagine
-    document.getElementById('productDetailImage').style.background = product.gradient;
+    if (product.gradient) {
+        document.getElementById('productDetailImage').style.background = product.gradient;
+    }
     
     // Colore stock
     const stockEl = document.getElementById('productDetailStock');
@@ -633,17 +511,17 @@ function switchTab(tab) {
 }
 
 function editProduct() {
-    Toast.show('Apertura editor prodotto...', 'info');
+    alert('Apertura editor prodotto...');
 }
 
 function adjustProductStock() {
-    Toast.show('Apertura form rettifica stock...', 'info');
+    alert('Apertura form rettifica stock...');
     closeProductDetailsModal();
 }
 
 function deleteProduct() {
     if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
-        Toast.show('Prodotto eliminato', 'success');
+        alert('Prodotto eliminato');
         closeProductDetailsModal();
     }
 }

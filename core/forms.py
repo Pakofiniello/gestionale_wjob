@@ -25,3 +25,8 @@ class LoginForm(forms.Form):
     username = forms.CharField(max_length=20, label="Nome utente")
     password = forms.CharField(label = "Password", widget = forms.PasswordInput)
 
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = models.Product
+        fields = ['name', 'codice_univoco', 'categoria', 'descrizione', 'prezzo', 'prezzo_di_base', 'stock', 'fornitore', 'ordine_riordino', 'unita_in_transito', 'location', 'image', 'is_active']

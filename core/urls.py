@@ -5,7 +5,7 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('shop/', views.shop, name='shop'),
+    path('shop/', views.product_shop, name='shop'),
     path('cart/', views.cart, name='cart'),
     path('checkout/', views.checkout, name='checkout'),
     
@@ -13,6 +13,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('products/', views.products, name='products'),
+    path('products/save/', views.product_save, name='product_save'),
     path('inventory/', views.inventory, name='inventory'),
     path('orders/', views.orders, name='orders'),
     path('suppliers/', views.suppliers, name='suppliers'),

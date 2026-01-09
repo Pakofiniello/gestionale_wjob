@@ -48,10 +48,10 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=250)
     codice_univoco = models.CharField(max_length=50, unique=True)
     categoria = models.ForeignKey(Category, on_delete=models.CASCADE)
-    descrizione = models.TextField()
+    descrizione = models.TextField(blank=True)
     prezzo = models.DecimalField(max_digits=10, decimal_places=2)
     prezzo_di_base = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField()

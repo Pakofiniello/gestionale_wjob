@@ -8,17 +8,60 @@ from django.shortcuts import render,redirect
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from . import forms, models
+from django.contrib.auth.decorators import login_required
+
+
+
+def product_shop(request):
+    products = models.Product.objects.filter(is_active=True)
+    categories = models.Category.objects.all()
+    
+    category_id = request.GET.get('category')
+    if category_id:
+        products = products.filter(category_id=category_id)
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'selected_category': category_id,
+    }
+    return render(request, 'core/shop.html', context)
+
+@login_required
+def product_save(request):
+    if request.method == 'POST':
+        print("=== DEBUG POST DATA ===")
+        print(f"POST data: {request.POST}")
+        
+        form = forms.ProductForm(request.POST)
+        
+        print(f"Form is valid: {form.is_valid()}")
+        
+        if form.is_valid():
+            product = form.save()
+            print(f"Prodotto salvato con ID: {product.id}")
+            messages.success(request, f'Prodotto "{product.name}" salvato con successo.')
+            return redirect('core:products')
+        else:
+            print(f"Errori nel form: {form.errors}")
+            for field, errors in form.errors.items():
+                print(f"Campo '{field}': {errors}")
+            messages.error(request, f'Errore nel salvataggio del prodotto: {form.errors}')
+            return redirect('core:products')
+    
+    return redirect('core:products')
 
 
 
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('core:user_login')
 
 def register(request):
 
-    
+
     if request.method == "POST":
 
         
@@ -103,7 +146,11 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 def products(request):
-    return render(request, 'core/products.html')
+    prodotti = models.Product.objects.all()
+    categories = models.Category.objects.all()
+    fornitori = models.Fornitore.objects.filter(is_active=True)
+    context = {'prodotti': prodotti, 'categories': categories, 'fornitori': fornitori}
+    return render(request, 'core/products.html', context)
 
 def inventory(request):
     return render(request, 'core/inventory.html')
